@@ -140,14 +140,18 @@ class RestorationTool:
         filesystem_utils.delete_directory_if_exists(self.workdir)
 
     def start_restoration(self, base_archive, incremental_archive,
-                          workdir, restart_service):
+                          workdir, without_stop_service, restart_service):
         self.prepare_workdir(workdir)
-        self.stop_service()
+        if not without_stop_service:
+            self.stop_service()
         self.clean_data_dir()
         self.restore_base_backup(base_archive)
         self.restore_incremental_backups(incremental_archive)
         self.prepare_data_dir()
         self.set_data_dir_permissions()
         self.clean()
-        if restart_service:
-            self.start_service()
+         if restart_service:
+            if without_stop_service:
+                self.logger.warning('Both arguments --without-stop-mysql and --restart are used. --restart will be ignored.')
+            else:
+                self.start_service()

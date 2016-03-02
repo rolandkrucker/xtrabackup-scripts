@@ -11,7 +11,8 @@ Usage:
 [--log-file=<log>] \
 [--out-file=<log>] \
 [--backup-threads=<threads>] \
-[--uncompressed-archives]
+[--uncompressed-archives] \
+[--without-stop-mysql] \
     pyxtrabackup-restore (-h | --help)
     pyxtrabackup --version
 
@@ -44,6 +45,10 @@ Options:
     --uncompressed-archives                     \
     Specify that the backup archives are not compressed. \
 Use this option if you did backup with --no-compress.
+    --without-stop-mysql                        \
+    Does not stop the server for restoration. \
+Ensure that --data-dir is defined to a directory differ from data directory of running MySQL server.
+
 
 """
 from docopt import docopt
@@ -62,6 +67,7 @@ def main():
         restore_tool.start_restoration(arguments['--base-archive'],
                                        arguments['--incremental-archive'],
                                        arguments['--tmp-dir'],
+                                       arguments['--without-stop-mysql'],
                                        arguments['--restart'])
     except Exception:
         logger = logging.getLogger(__name__)
