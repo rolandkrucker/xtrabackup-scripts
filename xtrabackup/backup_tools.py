@@ -6,7 +6,7 @@ import xtrabackup.log_manager as log_manager
 import xtrabackup.exception as exception
 import xtrabackup.timer as timer
 import logging
-
+import datetime
 
 class BackupTool:
 
@@ -56,7 +56,7 @@ class BackupTool:
 
     def prepare_repository(self, repository, incremental):
         if incremental:
-            sub_directory = '/INC'
+            sub_directory = ''.join(['/INC_', str(self.find_base_index(repository, 'INC'))])
         else:
             sub_directory = ''
         try:
@@ -64,6 +64,21 @@ class BackupTool:
                 repository, sub_directory)
         except exception.ProgramError:
             self.logger.error('Unable to create repository.',
+                              exc_info=self.debug)
+            raise
+
+    def find_base_index(self, repository, sub_dir_prefix):
+        try:
+            existing_inc_dirs = filesystem_utils.get_prefixed_files_in_dir(repository, ''.join([datetime.datetime.now().strftime("%Y%m%d"), '/', sub_dir_prefix]))
+            max_base_index = 0
+            for existing_inc_dir in existing_inc_dirs:
+                repo_path, inc_dir = filesystem_utils.split_path(existing_inc_dir)
+                base_index = int(inc_dir.split('_')[1])
+                if base_index > max_base_index:
+                   max_base_index = base_index
+            return max_base_index + 1
+        except exception.ProgramError:
+            self.logger.error('Unable to find base index.',
                               exc_info=self.debug)
             raise
 

@@ -93,3 +93,8 @@ def split_path(path):
 def get_prefixed_file_in_dir(directory, prefix):
     files = glob(''.join([directory, '/', prefix, '*']))
     return files[0]
+
+def get_prefixed_files_in_dir(directory, prefix):
+    files = glob(''.join([directory, '/', prefix, '*']))
+    return files
+
