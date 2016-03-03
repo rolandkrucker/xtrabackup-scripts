@@ -150,8 +150,9 @@ class RestorationTool:
         self.prepare_data_dir()
         self.set_data_dir_permissions()
         self.clean()
-         if restart_service:
+        if restart_service:
             if without_stop_service:
                 self.logger.warning('Both arguments --without-stop-mysql and --restart are used. --restart will be ignored.')
             else:
                 self.start_service()
+

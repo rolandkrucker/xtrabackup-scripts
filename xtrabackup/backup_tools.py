@@ -196,7 +196,7 @@ class BackupTool:
 
     def load_incremental_data(self):
         try:
-            self.base_dir = filesystem_utils.retrieve_value_from_file(
+            self.backup_repository = filesystem_utils.retrieve_value_from_file(
                 '/var/tmp/pyxtrabackup-incremental',
                 '^BASEDIR=(.*)$')
             self.last_lsn = filesystem_utils.retrieve_value_from_file(
@@ -231,12 +231,12 @@ class BackupTool:
                                  workdir, user, password, threads):
         self.check_prerequisites(repository)
         self.prepare_workdir(workdir)
-        self.prepare_repository(repository, True)
         if incremental:
             self.load_incremental_data()
             self.prepare_archive_name(incremental, True)
             self.exec_incremental_backup(user, password, threads)
         else:
+            self.prepare_repository(repository, True)
             self.prepare_archive_name(incremental, True)
             self.exec_full_backup(user, password, threads)
         self.save_incremental_data(incremental)
